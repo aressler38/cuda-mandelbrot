@@ -8,7 +8,7 @@ unsigned *computeMandelbrot(
 	unsigned size,
 	unsigned max_iterations=1024)
 {
-	static const int BLOCK_SIZE = 512;
+	static const int BLOCK_SIZE = 1024;
 	const int blockCount = (size+BLOCK_SIZE-1)/BLOCK_SIZE;
 	unsigned *iterations = new unsigned[size];
 	unsigned *device_iterations;

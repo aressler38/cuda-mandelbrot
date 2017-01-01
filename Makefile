@@ -5,10 +5,10 @@ NVCC=nvcc
 BUILD_DIR=build
 NVCC_FLAGS=-arch=sm_52 -rdc=true
 INCLUDES=-I/usr/local/cuda-8.0/include
-LINKS=-L/usr/local/cuda-8.0/lib64 -lcuda -lcudart 
-CUDA_LINK_OBJECTS=$(BUILD_DIR)/cuda-wrapper.o $(BUILD_DIR)/mandelbrot.o $(BUILD_DIR)/complex_t.o 
+LINKS=-L/usr/local/cuda-8.0/lib64 -lcuda -lcudart
+CUDA_LINK_OBJECTS=$(BUILD_DIR)/cuda-wrapper.o $(BUILD_DIR)/mandelbrot.o $(BUILD_DIR)/complex_t.o
 FINAL_OBJECTS=$(BUILD_DIR)/cuda-device-code.o $(CUDA_LINK_OBJECTS)
-MAIN_CPP_FILES=$(SRC_DIR)/main.cpp $(SRC_DIR)/bitmap_t.cpp
+MAIN_CPP_FILES=$(SRC_DIR)/main.cpp $(SRC_DIR)/bitmap_t.cpp $(SRC_DIR)/palette_t.cpp
 
 
 .PHONY: all
@@ -31,11 +31,11 @@ complex_t.o:
 mandelbrot.o: complex_t.o
 	@echo making mandelbrot.o
 	$(NVCC) $(NVCC_FLAGS) -o $(BUILD_DIR)/mandelbrot.o -c $(SRC_DIR)/mandelbrot.cu
-	
+
 cuda-wrapper.o: mandelbrot.o
 	@echo making wrapper
 	$(NVCC) $(NVCC_FLAGS) -o $(BUILD_DIR)/cuda-wrapper.o -c $(SRC_DIR)/cuda-wrapper.cu
 
 .PHONY: clean
-clean: 
+clean:
 	rm -rf program $(BUILD_DIR)/*.o

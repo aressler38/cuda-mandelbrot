@@ -2,31 +2,51 @@
 #include <memory>
 #include "cuda-wrapper.h"
 #include "bitmap_t.h"
+#include "palette_t.h"
+#include <sstream>
+#include <numeric>
 
 
-int main (void) {
-	bitmap_t::pixel_t black(0,0,0,255);
-	bitmap_t::pixel_t red(255,0,0,255);
-	bitmap_t::pixel_t green(0,255,0,255);
-	bitmap_t::pixel_t blue(0,0,255,255);
-	unsigned 
-		width = 1024,
-		height = 1024,
+/**
+ * Invoke with cmd line args:
+ * x_min x_max y_min y_max
+ */
+
+int main (int argc, char *argv[]) {
+	const unsigned
+		//width = 4096, height = 4096,
+		width = 8192, height = 8192,
 		size = width*height,
-		max_iterations = 512,
-		i,j,
-		index, iteration;
-	double 
+		max_iterations = 1024;
+	unsigned i,j, index, iteration;
+	double
 		x_min = -3.0,
 		x_max = 1.5,
 		y_min = -2.25,
 		y_max = 2.25,
-		dx = (x_max - x_min) / double(width),
-		dy = (y_max - y_min) / double(height);
+		dx,dy;
 	complex_t *points = new complex_t[size];
 	bitmap_t img(width, height);
 	complex_t *point;
-	bitmap_t::pixel_t *pixel;
+
+	// Parse args
+	if (argc == 5) {
+		std::stringstream ss;
+		ss << argv[1];
+		ss >> x_min;
+		ss.clear();
+		ss << argv[2];
+		ss >> x_max;
+		ss.clear();
+		ss << argv[3];
+		ss >> y_min;
+		ss.clear();
+		ss << argv[4];
+		ss >> y_max;
+	}
+
+	dx = (x_max - x_min) / double(width),
+	dy = (y_max - y_min) / double(height);
 
 	// Go left to right, top to bottom
 	for (i=0; i<height; ++i) {
@@ -41,30 +61,27 @@ int main (void) {
 	std::unique_ptr<unsigned[]> iterations
 		(computeMandelbrot(points, size, max_iterations));
 
+	// Make some color pixels
 	std::unique_ptr<bitmap_t::pixel_t[]>
 		pixels(new bitmap_t::pixel_t[width*height]);
 
 	for (int i=0; i<height; ++i) {
 		for (int j=0; j<width; ++j) {
 			index = i*width + j;
-			pixel = &pixels.get()[index];
 			iteration = iterations[index];
-
-			//std::cerr << "iteration " << index << "=" << iteration << "\n";
-			if (iteration >= max_iterations) {
-				pixel->alpha = 255;
-				pixel->blue = i > 255 ? 255 : 0;
-				pixel->green = j;
-				pixel->red = i>255 ? j>255 ? 255 : 0 : 0;
-			}
-			else {
-				*pixel = black;
-			}
+			pixels.get()[index] = palette_t::grab(float(iteration) / max_iterations);
 		}
 	}
 
 	img.set_image_data(pixels.get());
 	img.save("/tmp/test.bmp");
+
+	long long counter = 0;
+	for (i=0;i<size;++i) {
+		counter += static_cast<long long>(iterations[i]);
+	}
+
+	std::cout << "Total iterations: " << counter << "\n";
 
 	return 0;
 }
