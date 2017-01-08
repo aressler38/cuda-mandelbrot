@@ -17,7 +17,7 @@ int main (int argc, char *argv[]) {
 		//width = 4096, height = 4096,
 		width = 8192, height = 8192,
 		size = width*height,
-		max_iterations = 1024;
+		max_iterations = 2048;
 	unsigned i,j, index, iteration;
 	double
 		x_min = -3.0,

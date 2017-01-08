@@ -3,7 +3,7 @@ __global__ void mandelbrot (
 		complex_t *points,
 		unsigned *iterations,
 		unsigned size,
-		unsigned max_iterations=1024)
+		unsigned max_iterations)
 {
 	unsigned index = blockIdx.x * blockDim.x + threadIdx.x;
 

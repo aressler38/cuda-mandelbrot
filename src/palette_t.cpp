@@ -30,6 +30,13 @@ bitmap_t::pixel_t palette_t::palette[palette_t::size] = {
 };
 
 bitmap_t::pixel_t palette_t::grab (float percent) {
+	return bitmap_t::pixel_t(
+			percent*percent*percent*205,
+			(1.0-percent)*64,
+			(percent+0.3) * 25, 255);
+}
+
+/*bitmap_t::pixel_t palette_t::grab (float percent) {
 	const unsigned pick = unsigned(percent * palette_t::size);
 
 	if (pick < palette_t::size) {
@@ -38,4 +45,4 @@ bitmap_t::pixel_t palette_t::grab (float percent) {
 	else {
 		return palette_t::palette[palette_t::size - 1];
 	}
-}
+}*/
